@@ -162,7 +162,7 @@ const [serverError, setServerError] = useState<string | null>(null);
             </Button>
             <Button
               onClick={() => router.push("/login")}
-              className=" w-full flex-1 bg-white text-black hover:bg-white/20"
+              className="w-full flex-1"
               variant="outline"
             >
               Cancel

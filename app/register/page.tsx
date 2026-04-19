@@ -211,7 +211,7 @@ export default function RegisterPage() {
               ): "Register"}
             </Button>
             <Button
-              className=" w-full bg-white text-black hover:bg-white/20"
+              className="w-full"
               variant="outline"
               type="button"
               disabled={isGoogleLoading}

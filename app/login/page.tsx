@@ -150,7 +150,7 @@ export default function LoginPage() {
             </Button>
             <Button
               disabled={isGoogleLoading}
-              className=" w-full bg-white text-black hover:bg-white/20"
+              className="w-full"
               variant="outline"
               type="button"
               onClick= {async () => {

@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
@@ -7,17 +8,19 @@ import {
   Sparkles,
   Download,
   Loader2,
-  User,
   MapPin,
-  Briefcase,
-  GraduationCap,
-  Plus,
-  Wrench,
-  CheckCircle2,
 } from "lucide-react";
 import { useUserStore } from "@/store/user";
-import html2canvas from "html2canvas";
-import jsPDF from "jspdf";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 export const CvCreator = () => {
   const { user } = useUserStore();
@@ -98,145 +101,144 @@ export const CvCreator = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto p-4 sm:p-8 grid grid-cols-1 lg:grid-cols-12 gap-10">
+    <div className="max-w-7xl mx-auto px-6 py-8 grid grid-cols-1 lg:grid-cols-12 gap-6">
       <div className="lg:col-span-5 space-y-6">
-        <div className="bg-white rounded-[32px] p-8 shadow-sm border border-slate-100">
-          <div className="flex items-center gap-3 mb-8">
-            <div className="p-3 bg-indigo-600 rounded-2xl text-white shadow-lg shadow-indigo-100">
-              <FileUser size={28} />
+        <Card>
+          <CardHeader>
+            <div className="flex items-center gap-3">
+              <div className="flex size-11 items-center justify-center rounded-lg bg-accent text-primary">
+                <FileUser className="size-5" />
+              </div>
+              <div>
+                <CardTitle>Kreator CV AI</CardTitle>
+                <CardDescription>
+                  Dane z Twojego profilu są dodawane automatycznie.
+                </CardDescription>
+              </div>
             </div>
-            <div>
-              <h2 className="text-2xl font-black text-slate-900 tracking-tight">
-                Kreator CV AI
-              </h2>
-              <p className="text-slate-400 font-bold text-sm uppercase">
-                Dane z Twojego profilu są dodawane automatycznie
-              </p>
-            </div>
-          </div>
+          </CardHeader>
 
-          <div className="space-y-6">
-            <div className="grid grid-cols-2 gap-4 opacity-60">
-              <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
-                <span className="text-[10px] font-black text-slate-400 uppercase block mb-1">
+          <CardContent className="space-y-5">
+            <div className="grid grid-cols-2 gap-3">
+              <div className="p-3 bg-muted border border-border rounded-md">
+                <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide block mb-1">
                   Pobrane z bazy
                 </span>
-                <p className="font-bold text-slate-800 text-sm">{user?.name}</p>
+                <p className="font-medium text-foreground text-sm truncate">
+                  {user?.name || "—"}
+                </p>
               </div>
-              <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
-                <span className="text-[10px] font-black text-slate-400 uppercase block mb-1">
+              <div className="p-3 bg-muted border border-border rounded-md">
+                <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide block mb-1">
                   Lokalizacja
                 </span>
-                <p className="font-bold text-slate-800 text-sm">
-                  {user?.city_name}
+                <p className="font-medium text-foreground text-sm truncate">
+                  {user?.city_name || "—"}
                 </p>
               </div>
             </div>
 
-            <div>
-              <label className="text-xs font-black text-slate-500 uppercase ml-2 mb-2 block">
-                Stanowisko docelowe
-              </label>
-              <input
+            <div className="space-y-1.5">
+              <Label className="text-sm font-medium">Stanowisko docelowe</Label>
+              <Input
                 placeholder="np. Senior Frontend Developer"
-                className="w-full p-4 bg-slate-50 rounded-2xl font-bold border-none outline-none focus:ring-2 focus:ring-indigo-500"
+                value={formData.targetRole}
                 onChange={(e) =>
                   setFormData({ ...formData, targetRole: e.target.value })
                 }
               />
             </div>
 
-            <div>
-              <label className="text-xs font-black text-slate-500 uppercase ml-2 mb-2 block">
+            <div className="space-y-1.5">
+              <Label className="text-sm font-medium">
                 Twoje doświadczenie (surowe punkty)
-              </label>
+              </Label>
               <textarea
                 placeholder="Napisz krótko co robiłeś, AI zamieni to w język sukcesu..."
-                className="w-full p-4 bg-slate-50 rounded-2xl font-bold border-none outline-none h-32 resize-none focus:ring-2 focus:ring-indigo-500"
+                value={formData.experience}
                 onChange={(e) =>
                   setFormData({ ...formData, experience: e.target.value })
                 }
+                className="w-full min-h-28 p-3 bg-background border border-input rounded-md text-sm text-foreground outline-none focus:ring-2 focus:ring-ring focus:border-ring transition-all resize-none"
               />
             </div>
 
-            <div>
-              <label className="text-xs font-black text-slate-500 uppercase ml-2 mb-2 block">
+            <div className="space-y-1.5">
+              <Label className="text-sm font-medium">
                 Umiejętności (oddziel przecinkiem)
-              </label>
-              <input
+              </Label>
+              <Input
                 placeholder="np. React, Tailwind, Project Management"
-                className="w-full p-4 bg-slate-50 rounded-2xl font-bold border-none outline-none focus:ring-2 focus:ring-indigo-500"
+                value={formData.skills}
                 onChange={(e) =>
                   setFormData({ ...formData, skills: e.target.value })
                 }
               />
             </div>
 
-            <button
+            <Button
               onClick={handleGenerate}
               disabled={loading || !formData.targetRole}
-              className="w-full py-5 bg-slate-900 hover:bg-black text-white rounded-[24px] font-black text-lg transition-all shadow-xl shadow-slate-200 flex items-center justify-center gap-3 active:scale-[0.98]"
+              size="lg"
+              className="w-full"
             >
               {loading ? (
-                <Loader2 className="animate-spin" />
+                <Loader2 className="animate-spin size-4" />
               ) : (
-                <Sparkles size={20} />
+                <Sparkles className="size-4" />
               )}
               Generuj CV
-            </button>
-          </div>
-        </div>
+            </Button>
+          </CardContent>
+        </Card>
       </div>
 
       <div className="lg:col-span-7">
         <div className="sticky top-8">
-          <div className="flex justify-between items-center mb-6 px-4">
-            <h3 className="font-black text-slate-900 uppercase text-xs tracking-[0.2em]">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
               Live Preview
             </h3>
             {cvContent && (
-              <button
-                onClick={downloadPdf}
-                className="flex items-center gap-2 bg-indigo-600 text-white px-6 py-3 rounded-2xl font-black text-sm hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-100"
-              >
-                <Download size={18} /> Pobierz PDF
-              </button>
+              <Button onClick={downloadPdf} size="sm">
+                <Download className="size-4" /> Pobierz PDF
+              </Button>
             )}
           </div>
 
-          <div className="bg-slate-200 rounded-[40px] p-2 sm:p-4 overflow-hidden shadow-inner flex justify-center items-start min-h-[700px]">
+          <div className="bg-muted rounded-lg p-4 sm:p-6 overflow-hidden border border-border flex justify-center items-start min-h-[700px]">
             {cvContent ? (
               <div
                 ref={cvRef}
-                className="bg-white w-[210mm] min-h-[297mm] p-[15mm] shadow-2xl origin-top scale-[0.4] sm:scale-[0.55] lg:scale-[0.65] xl:scale-[0.8]"
+                className="bg-background text-foreground w-[210mm] min-h-[297mm] p-[15mm] shadow-2xl origin-top scale-[0.4] sm:scale-[0.55] lg:scale-[0.65] xl:scale-[0.8]"
               >
-                <div className="border-b-4 border-slate-900 pb-12 mb-12">
-                  <h1 className="text-6xl font-black text-slate-900 uppercase tracking-tighter mb-4">
+                <div className="border-b-2 border-foreground pb-8 mb-10">
+                  <h1 className="text-5xl font-bold text-foreground tracking-tight mb-3">
                     {user?.name}
                   </h1>
-                  <div className="flex items-center gap-6 text-slate-500 font-bold text-xl uppercase tracking-widest">
-                    <span className="text-indigo-600">
+                  <div className="flex items-center gap-5 text-muted-foreground text-base uppercase tracking-widest font-medium">
+                    <span className="text-primary font-semibold">
                       {formData.targetRole}
                     </span>
-                    <span className="w-2 h-2 rounded-full bg-slate-200" />
+                    <span className="size-1.5 rounded-full bg-border" />
                     <span className="flex items-center gap-2">
-                      <MapPin size={20} /> {user?.city_name}
+                      <MapPin className="size-4" /> {user?.city_name}
                     </span>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-3 gap-16">
-                  <div className="col-span-2 space-y-12">
+                <div className="grid grid-cols-3 gap-12">
+                  <div className="col-span-2">
                     <section>
-                      <h2 className="text-sm font-black text-slate-400 uppercase tracking-[0.3em] mb-8">
+                      <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-[0.25em] mb-6">
                         Doświadczenie zawodowe
                       </h2>
-                      <div className="space-y-8">
+                      <div className="space-y-6">
                         {cvContent.experience_bullets.map(
                           (point: string, i: number) => (
-                            <div key={i} className="flex gap-4 group">
-                              <div className="mt-1.5 w-4 h-4 rounded-full border-2 border-indigo-500 group-hover:bg-indigo-500 transition-colors shrink-0" />
-                              <p className="text-slate-700 font-medium text-lg leading-relaxed">
+                            <div key={i} className="flex gap-3">
+                              <div className="mt-2 size-3 rounded-full border-2 border-primary shrink-0" />
+                              <p className="text-foreground text-base leading-relaxed">
                                 {point}
                               </p>
                             </div>
@@ -246,25 +248,25 @@ export const CvCreator = () => {
                     </section>
                   </div>
 
-                  <div className="space-y-12">
+                  <div className="space-y-10">
                     <section>
-                      <h2 className="text-sm font-black text-slate-400 uppercase tracking-[0.3em] mb-8">
+                      <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-[0.25em] mb-5">
                         O mnie
                       </h2>
-                      <p className="text-slate-600 font-medium leading-relaxed italic text-lg leading-relaxed">
+                      <p className="text-foreground leading-relaxed italic text-sm">
                         {cvContent.bio}
                       </p>
                     </section>
 
                     <section>
-                      <h2 className="text-sm font-black text-slate-400 uppercase tracking-[0.3em] mb-8">
-                        Skille
+                      <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-[0.25em] mb-5">
+                        Umiejętności
                       </h2>
                       <div className="flex flex-wrap gap-2">
                         {cvContent.skills_array.map((skill: string) => (
                           <span
                             key={skill}
-                            className="px-4 py-2 bg-slate-100 rounded-xl font-black text-slate-700 text-sm uppercase"
+                            className="px-3 py-1 bg-muted rounded-md border border-border text-foreground text-xs font-medium uppercase"
                           >
                             {skill}
                           </span>
@@ -275,11 +277,11 @@ export const CvCreator = () => {
                 </div>
               </div>
             ) : (
-              <div className="flex flex-col items-center justify-center p-20 text-center space-y-4">
-                <div className="w-24 h-24 bg-white/50 rounded-full flex items-center justify-center animate-pulse">
-                  <FileUser size={48} className="text-slate-300" />
+              <div className="flex flex-col items-center justify-center p-16 text-center">
+                <div className="size-20 rounded-full bg-background border border-border flex items-center justify-center mb-4">
+                  <FileUser className="size-8 text-muted-foreground" />
                 </div>
-                <p className="text-slate-400 font-black text-sm uppercase tracking-widest">
+                <p className="text-muted-foreground text-xs uppercase tracking-widest font-semibold">
                   Wypełnij formularz, aby AI stworzyło podgląd
                 </p>
               </div>

@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import React, { useState, useRef } from "react";
@@ -8,7 +9,18 @@ import {
   Sparkles,
   Loader2,
   RefreshCw,
+  Thermometer,
+  Droplets,
+  AlertTriangle,
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 export const LaundryAssistant = () => {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -43,7 +55,7 @@ export const LaundryAssistant = () => {
 
       const data = await response.json();
       setResult(data);
-    } catch (error) {
+    } catch {
       alert("Błąd analizy zdjęcia");
     } finally {
       setLoading(false);
@@ -51,135 +63,158 @@ export const LaundryAssistant = () => {
   };
 
   return (
-    <div className="w-full p-4 mb-4 sm:p-8 space-y-6">
-      <div className="bg-white border border-slate-100 rounded-[32px] p-8 shadow-sm h-full">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <div className="space-y-6">
-            <div className="flex items-center justify-between">
-              <h2 className="text-2xl font-black text-slate-900 tracking-tight flex items-center gap-3">
-                <div className="p-3 bg-indigo-600 rounded-2xl text-white shadow-lg shadow-indigo-100">
-                  <Camera size={24} />
-                </div>
-                Skaner Metek AI
-              </h2>
-              {imagePreview && (
+    <div className="max-w-5xl mx-auto">
+      <Card>
+        <CardHeader>
+          <div className="flex items-center gap-3">
+            <div className="flex size-11 items-center justify-center rounded-lg bg-accent text-primary">
+              <Camera className="size-5" />
+            </div>
+            <div className="flex-1">
+              <CardTitle>Skaner Metek AI</CardTitle>
+              <CardDescription>
+                Wgraj zdjęcie metki, a AI odczyta symbole za Ciebie.
+              </CardDescription>
+            </div>
+            {imagePreview && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  setImagePreview(null);
+                  setResult(null);
+                }}
+              >
+                <RefreshCw className="size-3.5" />
+                Usuń zdjęcie
+              </Button>
+            )}
+          </div>
+        </CardHeader>
+
+        <CardContent>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div>
+              {!imagePreview ? (
                 <button
-                  onClick={() => {
-                    setImagePreview(null);
-                    setResult(null);
-                  }}
-                  className="text-xs font-black uppercase text-slate-400 hover:text-red-500 transition-colors flex items-center gap-1"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="border-2 border-dashed border-border rounded-lg h-64 w-full flex flex-col items-center justify-center gap-2 hover:border-primary hover:bg-muted/50 transition-all"
                 >
-                  <RefreshCw size={12} /> Usuń zdjęcie
+                  <div className="size-12 rounded-full bg-accent text-primary flex items-center justify-center">
+                    <Upload className="size-5" />
+                  </div>
+                  <p className="text-foreground font-medium">
+                    Wgraj zdjęcie metki
+                  </p>
+                  <p className="text-muted-foreground text-xs">
+                    AI odczyta symbole za Ciebie
+                  </p>
                 </button>
+              ) : (
+                <div className="relative rounded-lg overflow-hidden h-64 border border-border">
+                  <img
+                    src={imagePreview || "/placeholder.svg"}
+                    alt="Metka"
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-x-0 bottom-0 p-3 bg-gradient-to-t from-foreground/80 to-transparent">
+                    <Button
+                      onClick={analyzeLabel}
+                      disabled={loading}
+                      className="w-full"
+                    >
+                      {loading ? (
+                        <Loader2 className="animate-spin size-4" />
+                      ) : (
+                        <Sparkles className="size-4" />
+                      )}
+                      {loading ? "Analizuję symbole..." : "Analizuj zdjęcie"}
+                    </Button>
+                  </div>
+                </div>
               )}
+              <input
+                type="file"
+                ref={fileInputRef}
+                className="hidden"
+                accept="image/*"
+                onChange={handleImageUpload}
+              />
             </div>
 
-            {!imagePreview ? (
-              <div
-                onClick={() => fileInputRef.current?.click()}
-                className="border-2 border-dashed border-slate-700 rounded-2xl h-64 flex flex-col items-center justify-center cursor-pointer hover:border-blue-500 hover:bg-blue-500/5 transition-all"
-              >
-                <Upload className="text-slate-500 mb-2" size={40} />
-                <p className="text-slate-400 font-medium">
-                  Wgraj zdjęcie metki
-                </p>
-                <p className="text-slate-600 text-xs mt-1">
-                  AI odczyta symbole za Ciebie
-                </p>
-              </div>
-            ) : (
-              <div className="relative rounded-2xl overflow-hidden h-64 border border-slate-700">
-                <img
-                  src={imagePreview}
-                  alt="Metka"
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 to-transparent flex items-end p-4">
-                  <button
-                    onClick={analyzeLabel}
-                    disabled={loading}
-                    className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2 shadow-lg"
-                  >
-                    {loading ? (
-                      <Loader2 className="animate-spin" />
-                    ) : (
-                      <Sparkles size={18} />
-                    )}
-                    {loading ? "Analizuję symbole..." : "Analizuj zdjęcie"}
-                  </button>
-                </div>
-              </div>
-            )}
-            <input
-              type="file"
-              ref={fileInputRef}
-              className="hidden"
-              accept="image/*"
-              onChange={handleImageUpload}
-            />
-          </div>
-
-          <div className="bg-slate-50 rounded-2xl border border-slate-200 p-6 flex flex-col justify-center">
-            {result ? (
-              <div className="space-y-5 animate-in fade-in zoom-in-95">
-                <div className="flex justify-between items-center border-b border-slate-200 pb-4">
-                  <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-bold uppercase">
-                    {result.fabric}
-                  </span>
-                  <span className="text-3xl font-black text-slate-900">
-                    {result.temp}
-                  </span>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="p-3 bg-white border border-slate-200 rounded-xl">
-                    <p className="text-[10px] text-slate-500 uppercase font-bold">
-                      Program
-                    </p>
-                    <p className="text-sm font-semibold text-slate-800">
-                      {result.program}
-                    </p>
-                  </div>
-                  <div className="p-3 bg-white border border-slate-200 rounded-xl">
-                    <p className="text-[10px] text-slate-500 uppercase font-bold">
-                      Detergent
-                    </p>
-                    <p className="text-sm font-semibold text-slate-800">
-                      {result.detergent}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <p className="text-[10px] text-slate-500 uppercase font-bold">
-                    Instrukcja krok po kroku
-                  </p>
-                  {result.tips.map((tip: string, i: number) => (
-                    <div
-                      key={i}
-                      className="flex items-start gap-2 text-sm text-slate-600"
-                    >
-                      <span className="text-blue-500 mt-1">•</span> {tip}
+            <Card className="bg-muted/30">
+              <CardContent className="h-full flex flex-col justify-center">
+                {result ? (
+                  <div className="space-y-5 animate-in fade-in zoom-in-95">
+                    <div className="flex justify-between items-center border-b border-border pb-4">
+                      <span className="inline-flex items-center rounded-md bg-accent px-2.5 py-1 text-xs font-semibold text-primary uppercase tracking-wide">
+                        {result.fabric}
+                      </span>
+                      <div className="flex items-center gap-1.5 text-foreground">
+                        <Thermometer className="size-5 text-primary" />
+                        <span className="text-2xl font-bold">
+                          {result.temp}
+                        </span>
+                      </div>
                     </div>
-                  ))}
-                </div>
 
-                {result.warning && (
-                  <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-xl text-red-600 text-xs flex gap-2 italic">
-                    <span>⚠️</span> {result.warning}
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="p-3 bg-background border border-border rounded-md">
+                        <p className="text-[10px] text-muted-foreground uppercase font-semibold tracking-wide mb-0.5">
+                          Program
+                        </p>
+                        <p className="text-sm font-semibold text-foreground">
+                          {result.program}
+                        </p>
+                      </div>
+                      <div className="p-3 bg-background border border-border rounded-md">
+                        <p className="text-[10px] text-muted-foreground uppercase font-semibold tracking-wide mb-0.5">
+                          Detergent
+                        </p>
+                        <p className="text-sm font-semibold text-foreground">
+                          {result.detergent}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <p className="text-[10px] text-muted-foreground uppercase font-semibold tracking-wide flex items-center gap-1.5">
+                        <Droplets className="size-3.5" />
+                        Instrukcja krok po kroku
+                      </p>
+                      {result.tips.map((tip: string, i: number) => (
+                        <div
+                          key={i}
+                          className="flex items-start gap-2 text-sm text-foreground"
+                        >
+                          <span className="text-primary mt-0.5 shrink-0">
+                            &bull;
+                          </span>
+                          <span>{tip}</span>
+                        </div>
+                      ))}
+                    </div>
+
+                    {result.warning && (
+                      <div className="p-3 bg-destructive/10 border border-destructive/30 rounded-md text-destructive text-xs flex gap-2 items-start">
+                        <AlertTriangle className="size-4 shrink-0 mt-0.5" />
+                        <span className="italic">{result.warning}</span>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div className="text-center text-muted-foreground py-8">
+                    <Shirt className="size-12 mx-auto mb-3 opacity-30" />
+                    <p className="text-sm">
+                      Czekam na zdjęcie Twojej metki...
+                    </p>
                   </div>
                 )}
-              </div>
-            ) : (
-              <div className="text-center text-slate-600">
-                <Shirt size={48} className="mx-auto mb-4 opacity-10" />
-                <p>Czekam na zdjęcie Twojej metki...</p>
-              </div>
-            )}
+              </CardContent>
+            </Card>
           </div>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
     </div>
   );
 };

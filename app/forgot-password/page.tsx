@@ -91,7 +91,7 @@ export default function ForgotPasswordPage() {
             <Button
               variant={"outline"}
               onClick={() => router.push("/login")}
-              className="text-sm text-center w-full flex-1 dark:text-black bg-white hover:bg-gray-50"
+              className="text-sm text-center w-full flex-1"
             >
               Cancel
             </Button>
